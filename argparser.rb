@@ -74,6 +74,14 @@ class ArgParser
     end
 
     def print_help()
+        print('usage: ' + __FILE__ + ' [-h]')
+        @arguments.each do |key, val|
+            print(' [-' + val.get_short() + ']')
+        end
+        puts('')
+        puts('')
+        puts(@desc)
+        puts('')
         @arguments.each do |key, val|
             puts('-' + val.get_short() + ' ' + val.get_name() + ' (' + val.get_type().to_s() + '): ' + val.get_desc())
         end
@@ -97,6 +105,7 @@ end
 # test
 if __FILE__ == $0
     argparser = ArgParser.new()
+    argparser.desc('Test description.')
     argparser.add('time', 't', 'int', 'Set the video length', true)
     argparser.add('pause', 'p', 'int', 'Set the pause time', false)
     argparser.add('acc', 'a', 'int', 'Set acceleration rate', false)

@@ -1,12 +1,17 @@
+# Trying to reverse-engineer(?) this in ruby
+# https://docs.python.org/3/library/argparse.html
+
 class Argument
     @@name = ''
     @@short = ''
+    @@type = ''
     @@desc = ''
     @@required = false
 
-    def initialize(name, short, desc, required=false)
+    def initialize(name, short, type, desc, required=false)
         @name = name
         @short = short
+        @type = type
         @desc = desc
         @required = required
     end
@@ -19,6 +24,10 @@ class Argument
         return @short
     end
 
+    def get_type()
+        return @type
+    end
+
     def get_desc()
         return @desc
     end
@@ -29,17 +38,22 @@ class Argument
 end
 
 class ArgParser
-    @@arguments = []
+    @@arguments = {}
+    @@desc = ''
 
     def initialize()
-        @arguments = []
+        @arguments = {}
     end
 
-    def add(name, short, desc, required=false)
-        newarg = Argument.new(name, short, desc, required)
-        @arguments.push(newarg)
+    def add(name, short, type, desc, required=false)
+        newarg = Argument.new(name, short, type, desc, required)
+        @arguments[short] = newarg
     end
 
+    def desc(desc)
+        @desc = desc
+    end
+    
     def argparse()
         if ARGV[0] == '-h'
             print_help()
@@ -47,15 +61,35 @@ class ArgParser
         end
         res = {}
         for i in (0...ARGV.length()).step(2)
-            res[ARGV[i][1]] = ARGV[i+1]
+            short = ARGV[i][1]
+            val = ARGV[i+1]
+            arg = @arguments[short]
+            if check_type(val, arg.get_type()) == false
+                print_error(arg, val)
+                return
+            end
+            res[short] = val
         end
         return res
     end
 
     def print_help()
-        for i in (0...@arguments.length())
-            puts('-' + @arguments[i].get_short() + ' ' + @arguments[i].get_name() + ': ' + @arguments[i].get_desc())
+        @arguments.each do |key, val|
+            puts('-' + val.get_short() + ' ' + val.get_name() + ' (' + val.get_type().to_s() + '): ' + val.get_desc())
         end
+    end
+
+    def print_error(arg, val)
+        puts('error: argument ' + arg.get_short() + ': invalid ' + arg.get_type().to_s()  + ' value: ' + val.to_s())
+    end
+
+    def check_type(val, type) #str, int, float, bool
+        if type == 'int'
+            if /[-+]?\d+/ == val
+                return false
+            end
+        end
+        return true
     end
 end
 
@@ -63,9 +97,9 @@ end
 # test
 if __FILE__ == $0
     argparser = ArgParser.new()
-    argparser.add('time', 't', 'Set the video length', false)
-    argparser.add('pause', 'p', 'Set the pause time', false)
-    argparser.add('acc', 'a', 'Set acceleration rate', false)
+    argparser.add('time', 't', 'int', 'Set the video length', true)
+    argparser.add('pause', 'p', 'int', 'Set the pause time', false)
+    argparser.add('acc', 'a', 'int', 'Set acceleration rate', false)
     args = argparser.argparse()
     puts(args)
 end

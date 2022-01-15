@@ -93,11 +93,22 @@ class ArgParser
 
     def check_type(val, type) #str, int, float, bool
         if type == 'int'
-            if /[-+]?\d+/ == val
+            if /^([-+]?\d+)$/.match(val).length() == 0
                 return false
             end
+            return true
         end
-        return true
+
+        if type == 'bool'
+            if val != 'true' and val != 'false'
+                return false
+            end
+            return true
+        end
+
+        if type == 'str'
+            return true
+        end
     end
 end
 
@@ -106,9 +117,9 @@ end
 if __FILE__ == $0
     argparser = ArgParser.new()
     argparser.desc('Test description.')
-    argparser.add('time', 't', 'int', 'Set the video length', true)
-    argparser.add('pause', 'p', 'int', 'Set the pause time', false)
-    argparser.add('acc', 'a', 'int', 'Set acceleration rate', false)
+    argparser.add('time', 'i', 'int', 'Set the video length', true)
+    argparser.add('pause', 's', 'str', 'Set the pause time', false)
+    argparser.add('acc', 'b', 'bool', 'Set acceleration rate', false)
     args = argparser.argparse()
     puts(args)
 end

@@ -104,7 +104,7 @@ class ArgParser
         end
 
         if type == 'float'
-            if (/^([-+]?\d+)\.(\d+)$/).match(val) == nil
+            if (/^([-+]?\d+)?\.(\d+)$/).match(val) == nil
                 return false
             end
             return true

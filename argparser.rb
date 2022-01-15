@@ -91,9 +91,20 @@ class ArgParser
         puts('error: argument ' + arg.get_short() + ': invalid ' + arg.get_type().to_s()  + ' value: ' + val.to_s())
     end
 
+    # [x] int
+    # [x] str
+    # [ ] float
+    # [x] bool
     def check_type(val, type) #str, int, float, bool
         if type == 'int'
-            if /^([-+]?\d+)$/.match(val).length() == 0
+            if (/^([-+]?\d+)$/).match(val) == nil
+                return false
+            end
+            return true
+        end
+
+        if type == 'float'
+            if (/^([-+]?\d+)\.(\d+)$/).match(val) == nil
                 return false
             end
             return true
@@ -120,6 +131,7 @@ if __FILE__ == $0
     argparser.add('time', 'i', 'int', 'Set the video length', true)
     argparser.add('pause', 's', 'str', 'Set the pause time', false)
     argparser.add('acc', 'b', 'bool', 'Set acceleration rate', false)
+    argparser.add('random', 'f', 'float', 'Set random var', false)
     args = argparser.argparse()
     puts(args)
 end

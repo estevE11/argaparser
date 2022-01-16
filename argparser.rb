@@ -111,7 +111,7 @@ class ArgParser
         end
 
         if type == 'bool'
-            if val != 'true' and val != 'false'
+            if val != 'true' and val != 'false' and val != '0' and val != '1'
                 return false
             end
             return true

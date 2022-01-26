@@ -76,7 +76,9 @@ class ArgParser
     def print_help()
         print('usage: ' + __FILE__ + ' [-h]')
         @arguments.each do |key, val|
-            print(' [-' + val.get_short() + ']')
+            if val.is_required()
+                print(' [-' + val.get_short() + '] ' + '(' + val.get_type().to_s() + ')')
+            end
         end
         puts('')
         puts('')
